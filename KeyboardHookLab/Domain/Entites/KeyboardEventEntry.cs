@@ -1,10 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace KeyboardHookLab.Domain.Entities;
 
-namespace KeyboardHookLab.Domain.Entites
+public sealed class KeyboardEventEntry
 {
-    internal class KeyboardEventEntry
+    public DateTimeOffset Timestamp { get; }
+
+    public string EventType { get; }
+
+    public string KeyName { get; }
+
+    public string Source { get; }
+
+    public string DisplayText { get; }
+
+    public KeyboardEventEntry(
+        DateTimeOffset timestamp,
+        string eventType,
+        string keyName,
+        string source)
     {
+        Timestamp = timestamp;
+        EventType = eventType;
+        KeyName = keyName;
+        Source = source;
+
+        DisplayText =
+            $"[{Timestamp:HH:mm:ss.fff}] [{Source}] [{EventType}] {KeyName}";
     }
 }
