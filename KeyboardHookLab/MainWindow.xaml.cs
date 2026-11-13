@@ -1,24 +1,77 @@
-﻿using System.Text;
+﻿
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using KeyboardHookLab.Presentation.ViewModels;
 
-namespace KeyboardHookLab
+namespace KeyboardHookLab;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly MainWindowViewModel _viewModel;
+
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        _viewModel = new MainWindowViewModel();
+
+        DataContext = _viewModel;
+    }
+
+    private void OnPreviewKeyDown(
+        object sender,
+        KeyEventArgs e)
+    {
+        Key pressedKey = GetActualKey(e);
+
+        if (pressedKey == Key.Escape)
         {
-            InitializeComponent();
+            _viewModel.ClearKeyboardEventsCommand.Execute(null);
+
+            return;
         }
+
+        _viewModel.RegisterKeyboardEvent(
+            "KEY DOWN",
+            pressedKey.ToString(),
+            "WPF");
+    }
+
+    private void OnPreviewKeyUp(
+        object sender,
+        KeyEventArgs e)
+    {
+        Key releasedKey = GetActualKey(e);
+
+        _viewModel.RegisterKeyboardEvent(
+            "KEY UP",
+            releasedKey.ToString(),
+            "WPF");
+    }
+
+    private void OnWindowActivated(
+        object? sender,
+        EventArgs e)
+    {
+        _viewModel.UpdateApplicationStatus(
+            "Приложение активно");
+    }
+
+    private void OnWindowDeactivated(
+        object? sender,
+        EventArgs e)
+    {
+        _viewModel.UpdateApplicationStatus(
+            "Приложение неактивно");
+    }
+
+    private static Key GetActualKey(KeyEventArgs e)
+    {
+        if (e.Key == Key.System)
+        {
+            return e.SystemKey;
+        }
+
+        return e.Key;
     }
 }
